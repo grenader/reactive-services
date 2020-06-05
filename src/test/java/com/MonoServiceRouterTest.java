@@ -12,7 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @ExtendWith(SpringExtension.class)
 //  We create a `@SpringBootTest`, starting an actual server on a `RANDOM_PORT`
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReactiveServerApplication.class)
-public class GreetingRouterTest {
+public class MonoServiceRouterTest {
 
     // Spring Boot will create a `WebTestClient` for you,
     // already configure and ready to issue requests against "localhost:RANDOM_PORT"

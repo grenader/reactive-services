@@ -9,12 +9,12 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
-public class GreetingRouter {
+public class MonoServiceRouter {
 
     @Bean
-    public RouterFunction<ServerResponse> route(GreetingHandler greetingHandler) {
+    public RouterFunction<ServerResponse> route(MonoServiceHandler monoServiceHandler) {
         return RouterFunctions
                 .route(RequestPredicates.GET("/mono").
-                        and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), greetingHandler::hello);
+                        and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), monoServiceHandler::hello);
     }
 }
