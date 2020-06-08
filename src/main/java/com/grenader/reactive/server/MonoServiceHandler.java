@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class MonoServiceHandler {
 
-    public Mono<ServerResponse> hello(ServerRequest request) {
+    public Mono<ServerResponse> mono(ServerRequest request) {
         try {
             Thread.sleep(2);
         } catch (InterruptedException e) {
