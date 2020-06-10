@@ -1,4 +1,4 @@
-package com.grenader.reactive.server;
+package com.grenader.reactive.server.handler;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

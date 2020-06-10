@@ -1,4 +1,4 @@
-package com.grenader.reactive.server;
+package com.grenader.reactive.server.handler;
 
 import com.grenader.reactive.server.model.Profile;
 import com.grenader.reactive.server.service.ProfileService;
@@ -10,8 +10,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
-
-import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
 @Component
 public class ProfileServiceHandler {
@@ -50,6 +48,14 @@ public class ProfileServiceHandler {
         String profileId = request.pathVariable("id");
 
         return service.get(profileId)
+                .flatMap((post) -> ServerResponse.ok().body(Mono.just(post), Profile.class))
+                .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    public Mono getProfileByUserId(ServerRequest request) {
+        String userId = request.pathVariable("id");
+
+        return service.getByUserId(userId)
                 .flatMap((post) -> ServerResponse.ok().body(Mono.just(post), Profile.class))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }

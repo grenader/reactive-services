@@ -1,7 +1,8 @@
 package com;
 
 import com.grenader.reactive.server.ReactiveServerApplication;
-import com.grenader.reactive.server.model.Profile;
+import com.grenader.reactive.server.model.User;
+import com.grenader.reactive.server.model.UserHistory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,37 +11,36 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@ExtendWith(SpringExtension.class)
-//  We create a `@SpringBootTest`, starting an actual server on a `RANDOM_PORT`
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReactiveServerApplication.class)
-public class ProfileServiceRouterTest {
+import java.util.Collections;
 
-    // Spring Boot will create a `WebTestClient` for you,
-    // already configure and ready to issue requests against "localhost:RANDOM_PORT"
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReactiveServerApplication.class)
+public class HistoryEndPointTest {
+
     @Autowired
     private WebTestClient webTestClient;
 
     @Test
-    public void testTest() {
+    public void testGetByUserId() {
         webTestClient
                 // Create a GET request to test an endpoint
-                .get().uri("/test")
+                .get().uri("/history/u2")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 // and use the dedicated DSL to test assertions against the response
                 .expectStatus().isOk()
-                .expectBody(Profile.class).isEqualTo(new Profile("44", "test44@email.com"));
+                .expectBody(UserHistory.class).isEqualTo(new UserHistory("u2", Collections.singletonMap(1L, "User record has been created"),"Pending"));
     }
 
     @Test
-    public void testProfiles() {
+    public void testHistory() {
         webTestClient
                 // Create a GET request to test an endpoint
-                .get().uri("/profiles")
+                .get().uri("/history")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 // and use the dedicated DSL to test assertions against the response
                 .expectStatus().isOk()
-                .expectBodyList(Profile.class).contains(new Profile("1", "test1@test.com"));
+                .expectBodyList(UserHistory.class).contains(new UserHistory("u1", Collections.singletonMap(1L, "User record has been activated"),  "Active"));
     }
 }

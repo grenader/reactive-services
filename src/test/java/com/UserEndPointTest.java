@@ -1,6 +1,7 @@
 package com;
 
 import com.grenader.reactive.server.ReactiveServerApplication;
+import com.grenader.reactive.server.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,24 +11,33 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @ExtendWith(SpringExtension.class)
-//  We create a `@SpringBootTest`, starting an actual server on a `RANDOM_PORT`
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReactiveServerApplication.class)
-public class MonoServiceRouterTest {
+public class UserEndPointTest {
 
-    // Spring Boot will create a `WebTestClient` for you,
-    // already configure and ready to issue requests against "localhost:RANDOM_PORT"
     @Autowired
     private WebTestClient webTestClient;
 
     @Test
-    public void testHello() {
+    public void testGetById() {
         webTestClient
                 // Create a GET request to test an endpoint
-                .get().uri("/mono")
-                .accept(MediaType.TEXT_PLAIN)
+                .get().uri("/users/u1")
+                .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 // and use the dedicated DSL to test assertions against the response
                 .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Spring Reactive Service");
+                .expectBody(User.class).isEqualTo(new User("u1", "FirstName1 LastName1"));
+    }
+
+    @Test
+    public void testUsers() {
+        webTestClient
+                // Create a GET request to test an endpoint
+                .get().uri("/users")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                // and use the dedicated DSL to test assertions against the response
+                .expectStatus().isOk()
+                .expectBodyList(User.class).contains(new User("u2", "FirstName2 LastName2"));
     }
 }

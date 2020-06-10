@@ -1,14 +1,21 @@
 package com.grenader.reactive.client;
 
+import com.grenader.reactive.client.model.BusinessUser;
+import com.grenader.reactive.server.model.Profile;
+import com.grenader.reactive.server.model.User;
+import com.grenader.reactive.server.model.UserHistory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class MonoWebClient {
     public static final int TOTAL_CALLS = 1000;
     private WebClient client = WebClient.create("http://localhost:8080");
@@ -18,6 +25,49 @@ public class MonoWebClient {
 
         return ">> result = " +
                 result.flatMap(res -> res.bodyToMono(String.class)).block();
+    }
+
+    public String collectBusinessUserInParallelTraditionalWayAndPrintResults() {
+        return Arrays.asList(new String[TOTAL_CALLS]).parallelStream().
+                map(stream -> new StringBuilder(">> business user result = ").append(collectOneBusinessUserTraditionalWay()).append("\n")).
+                collect(Collectors.joining());
+    }
+
+    public String collectBusinessUserInParallelReactiveWayAndPrintResults() {
+        return Arrays.asList(new String[TOTAL_CALLS]).parallelStream().
+                map(stream -> new StringBuilder(">> business user result = ").append(collectOneBusinessUserReactiveWay()).append("\n")).
+                collect(Collectors.joining());
+    }
+
+    public BusinessUser collectOneBusinessUserReactiveWay() {
+        final String userId = "u1";
+
+        Mono<User> user = client.get().uri("/users/" + userId).retrieve()
+                .bodyToMono(User.class).subscribeOn(Schedulers.elastic());
+        Mono<Profile> profile = client.get().uri("/profiles/byUserId/" + userId).retrieve()
+                .bodyToMono(Profile.class).subscribeOn(Schedulers.elastic());
+        Mono<UserHistory> history = client.get().uri("/history/" + userId).retrieve()
+                .bodyToMono(UserHistory.class).subscribeOn(Schedulers.elastic());
+
+        return Mono.zip(values -> new BusinessUser((User)values[0], (Profile) values[1], (UserHistory) values[2]), user, profile, history).block();
+    }
+
+    public BusinessUser collectOneBusinessUserTraditionalWay() {
+        final String userId = "u1";
+
+        Mono<ClientResponse> userResult = client.get().uri("/users/" + userId)
+                .accept(MediaType.APPLICATION_JSON).exchange();
+        final User user = userResult.flatMap(res -> res.bodyToMono(User.class)).block();
+
+        Mono<ClientResponse> profileResult = client.get().uri("/profiles/byUserId/" + userId)
+                .accept(MediaType.APPLICATION_JSON).exchange();
+        final Profile profile = profileResult.flatMap(res -> res.bodyToMono(Profile.class)).block();
+
+        Mono<ClientResponse> historyResult = client.get().uri("/history/" + userId)
+                .accept(MediaType.APPLICATION_JSON).exchange();
+        final UserHistory history = historyResult.flatMap(res -> res.bodyToMono(UserHistory.class)).block();
+
+        return new BusinessUser(user, profile, history);
     }
 
     public String callMonoInOrderAndGetResults() {
