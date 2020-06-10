@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple3;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MonoWebClient {
     public static final int TOTAL_CALLS = 1000;
-    private WebClient client = WebClient.create("http://localhost:8080");
+    private final WebClient client = WebClient.create("http://localhost:8080");
 
     public String callAndGetMonoResultsOnce() {
         Mono<ClientResponse> result = callServerMono();
@@ -42,14 +43,17 @@ public class MonoWebClient {
     public BusinessUser collectOneBusinessUserReactiveWay() {
         final String userId = "u1";
 
-        Mono<User> user = client.get().uri("/users/" + userId).retrieve()
+        Mono<User> userServiceCall = client.get().uri("/users/" + userId).retrieve()
                 .bodyToMono(User.class).subscribeOn(Schedulers.elastic());
-        Mono<Profile> profile = client.get().uri("/profiles/byUserId/" + userId).retrieve()
+        Mono<Profile> profileServiceCall = client.get().uri("/profiles/byUserId/" + userId).retrieve()
                 .bodyToMono(Profile.class).subscribeOn(Schedulers.elastic());
-        Mono<UserHistory> history = client.get().uri("/history/" + userId).retrieve()
+        Mono<UserHistory> historyServiceCall = client.get().uri("/history/" + userId).retrieve()
                 .bodyToMono(UserHistory.class).subscribeOn(Schedulers.elastic());
 
-        return Mono.zip(values -> new BusinessUser((User)values[0], (Profile) values[1], (UserHistory) values[2]), user, profile, history).block();
+        // make a call to three services simulteneously and get the results.
+        final Tuple3<User, Profile, UserHistory> tupleResult = Mono.zip(userServiceCall, profileServiceCall, historyServiceCall).block();
+
+        return new BusinessUser(tupleResult.getT1(), tupleResult.getT2(), tupleResult.getT3());
     }
 
     public BusinessUser collectOneBusinessUserTraditionalWay() {
