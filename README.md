@@ -1,10 +1,10 @@
 ## reactive-services examples
 This repository provides some samples of Java RESTful services and a client built in a 'reactive way'.
 This is a recommended approach to provide and consume web service in Spring 5.
-This reactive approach is coming a replacement to well-known Spring MVC and RestTemplate.
+This reactive approach is coming as a replacement to well-known Spring MVC and RestTemplate.
 
-This repo has a single project build with Maven.
-The project has two simple SpringBoot application so far:
+This repo has a single project built with Maven.
+The project has two small SpringBoot applications:
 * com.grenader.reactive.server.ReactiveServerApplication - is a reactive web-services application that uses Spring Webflux.
 * com.grenader.reactive.client.ReactiveClientApplication - is a Reactive client application that uses org.springframework.web.reactive.function.client.WebClient
 
@@ -68,7 +68,7 @@ Reactive Client code is located in **com.grenader.reactive.client.MonoWebClient.
 * Direct article about WebClient on Spring 5: https://www.baeldung.com/spring-5-webclient
 * Video from Josh Long: https://www.youtube.com/watch?v=leZdgr-O4LE&t=4s
 
-* Benefits on WebClient: https://stackoverflow.com/questions/51953826/resttemplate-vs-webclient-benefits-in-servlet-based-web-mvc-app
+* Benefits of WebClient: https://stackoverflow.com/questions/51953826/resttemplate-vs-webclient-benefits-in-servlet-based-web-mvc-app
 * How to test: https://docs.spring.io/spring/docs/current/spring-framework-reference/pdf/testing-webtestclient.pdf
 
 
