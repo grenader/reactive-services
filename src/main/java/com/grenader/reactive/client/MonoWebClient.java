@@ -50,7 +50,7 @@ public class MonoWebClient {
         Mono<UserHistory> historyServiceCall = client.get().uri("/history/" + userId).retrieve()
                 .bodyToMono(UserHistory.class).subscribeOn(Schedulers.elastic());
 
-        // make a call to three services simulteneously and get the results.
+        // make a call to three services simultaneously and get the results.
         final Tuple3<User, Profile, UserHistory> tupleResult = Mono.zip(userServiceCall, profileServiceCall, historyServiceCall).block();
 
         return new BusinessUser(tupleResult.getT1(), tupleResult.getT2(), tupleResult.getT3());
