@@ -17,7 +17,7 @@ public class ProfileServiceHandler {
     @Autowired
     ProfileService service;
 
-    public Mono addProfile(ServerRequest request) {
+    public Mono<ServerResponse> addProfile(ServerRequest request) {
         final Optional<String> email = request.queryParam("email");
         if (!email.isPresent())
             return ServerResponse.badRequest().bodyValue("Expecting 'email' as HTTP parameter.");
@@ -27,7 +27,7 @@ public class ProfileServiceHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono editProfile(ServerRequest request) {
+    public Mono<ServerResponse> editProfile(ServerRequest request) {
         String profileId = request.pathVariable("id");
         final Optional<String> email = request.queryParam("email");
         if (!email.isPresent())
@@ -38,13 +38,13 @@ public class ProfileServiceHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono getProfiles(ServerRequest request) {
+    public Mono<ServerResponse> getProfiles(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(service.all(), Profile.class)
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono getProfileById(ServerRequest request) {
+    public Mono<ServerResponse> getProfileById(ServerRequest request) {
         String profileId = request.pathVariable("id");
 
         return service.get(profileId)
@@ -52,7 +52,7 @@ public class ProfileServiceHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono getProfileByUserId(ServerRequest request) {
+    public Mono<ServerResponse> getProfileByUserId(ServerRequest request) {
         String userId = request.pathVariable("id");
 
         return service.getByUserId(userId)
@@ -60,7 +60,7 @@ public class ProfileServiceHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono deleteProfileById(ServerRequest request) {
+    public Mono<ServerResponse> deleteProfileById(ServerRequest request) {
         String profileId = request.pathVariable("id");
 
         return service.delete(profileId)

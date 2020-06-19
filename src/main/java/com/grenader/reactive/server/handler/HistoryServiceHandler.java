@@ -15,13 +15,13 @@ public class HistoryServiceHandler {
     @Autowired
     HistoryService service;
 
-    public Mono getAllHistory(ServerRequest request) {
+    public Mono<ServerResponse> getAllHistory(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(service.all(), UserHistory.class)
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono getHistoryByUserId(ServerRequest request) {
+    public Mono<ServerResponse> getHistoryByUserId(ServerRequest request) {
         String profileId = request.pathVariable("id");
 
         return service.get(profileId)

@@ -15,13 +15,13 @@ public class UserServiceHandler {
     @Autowired
     UserService service;
 
-    public Mono getUsers(ServerRequest request) {
+    public Mono<ServerResponse> getUsers(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(service.all(), User.class)
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono getUserById(ServerRequest request) {
+    public Mono<ServerResponse> getUserById(ServerRequest request) {
         String profileId = request.pathVariable("id");
 
         return service.get(profileId)
